@@ -6,15 +6,10 @@ import Post from "./MyPosts/Post/Post";
 
 const Profile = (props) => {
 
-    // let postData = [
-    //     {id: 1, message: 'Hi, how are you?', likeCount: 12},
-    //     {id: 2, message: 'It\'s my first post', likeCount: 20},
-    // ]
-
     return (
         <div>
             <ProfileInfo/>
-            <MyPost postData={props.postData} />
+            <MyPost postData={props.state.postData} addPost={props.addPost}/>
         </div>
     );
 }
