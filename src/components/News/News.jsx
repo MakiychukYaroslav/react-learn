@@ -1,21 +1,21 @@
 import React from "react";
 import s from './News.module.css'
 import NewsItem from "./NewsItem/NewsItem";
-import {addNewsPostActionCreator, updateNewsPostActionCreator} from "../../redux/news-reducer";
 
 
 const News = (props) => {
+    let state = props.newsPage;
 
-    let newsElements = props.state.newsData.map(news => <NewsItem news={news.news}/>);
-    let newNewsBody = props.state.newNewsText;
+    let newsElements = state.newsData.map(news => <NewsItem news={news.news}/>);
+    let newNewsBody = state.newNewsText;
 
     let sendNews = () =>{
-        props.dispatch(addNewsPostActionCreator());
+        props.onSendNews();
     }
 
     let sendChange = (e) =>{
         let text = e.target.value;
-        props.dispatch(updateNewsPostActionCreator(text));
+        props.onSendChange(text);
     }
 
     return (
