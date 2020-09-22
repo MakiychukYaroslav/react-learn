@@ -18,7 +18,7 @@ const Dialogs = (props) => {
 
     let sendChange = (e) => {
         let text = e.target.value;
-        props.onSendChange(text);
+        props.onAddSendChange(text);
     }
 
     return (
