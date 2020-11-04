@@ -1,0 +1,193 @@
+Index: src/App.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/App.js	(revision a635d0b1a6ccd7b9204c40e301afaf82e1579db6)
++++ src/App.js	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
+@@ -9,6 +9,8 @@
+ import News from "./components/News/News";
+ import Music from "./components/Music/Music";
+ import Settings from "./components/Settings/Settings";
++import DialogsContainer from "./components/Dialogs/DialogsoContainer";
++import NewsContainer from "./components/News/NewsContainer";
+ 
+ function App(props) {
+ 
+@@ -18,9 +20,9 @@
+             <Navbar/>
+             <div className={'app-wrapper-content'}>
+                 <Route path={"/dialogs"}
+-                       render={() => <Dialogs state={props.state.dialogPage} dispatch={props.dispatch}/>}/>
++                       render={() => <DialogsContainer store={props.store}/>}/>
+                 <Route path={"/profile"} render={() => <Profile store={props.store}/>}/>
+-                <Route path={"/news"} render={() => <News state ={props.state.newsPage} dispatch={props.dispatch}/>}/>
++                <Route path={"/news"} render={() => <NewsContainer store={props.store}/>}/>
+                 <Route path={"/music"} render={() => <Music/>}/>
+                 <Route path={"/settings"} render={() => <Settings/>}/>
+             </div>
+Index: src/components/Dialogs/Dialogs.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/components/Dialogs/Dialogs.jsx	(revision a635d0b1a6ccd7b9204c40e301afaf82e1579db6)
++++ src/components/Dialogs/Dialogs.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
+@@ -1,25 +1,24 @@
+ import React from "react";
+ import s from './Dialogs.module.css'
+-import {NavLink} from "react-router-dom";
+ import DialogItem from "./DialogItem/DialogItem";
+ import Message from "./Message/Message";
+-import {sendMessActionCreator, updateNewSendMessActionCreator} from "../../redux/dialogs-reducer";
+ 
+ 
+ const Dialogs = (props) => {
++    let state = props.dialogPage;
+ 
+-    let dialogsElements = props.state.dialogsData.map(dialog => <DialogItem name={dialog.name} id={dialog.id}/>);
+-    let messagesElements = props.state.messagesData.map(messageG => <Message message={messageG.message}/>);
+-    let newMessageBody = props.state.newMessageText;
++    let dialogsElements = state.dialogsData.map(dialog => <DialogItem name={dialog.name} id={dialog.id}/>);
++    let messagesElements = state.messagesData.map(messageG => <Message message={messageG.message}/>);
++    let newMessageBody = state.newMessageText;
+     // let newSendElements = React.createRef();
+ 
+     let sendMess = () => {
+-        props.dispatch(sendMessActionCreator());
++        props.onSendMess();
+     }
+ 
+     let sendChange = (e) => {
+         let text = e.target.value;
+-        props.dispatch(updateNewSendMessActionCreator(text));
++        props.onSendChange(text);
+     }
+ 
+     return (
+Index: src/components/Dialogs/DialogsoContainer.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/components/Dialogs/DialogsoContainer.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
++++ src/components/Dialogs/DialogsoContainer.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
+@@ -0,0 +1,24 @@
++import React from "react";
++import {sendMessActionCreator, updateNewSendMessActionCreator} from "../../redux/dialogs-reducer";
++import Dialogs from "./Dialogs";
++
++
++const DialogsContainer = (props) => {
++    let state = props.store.getState().dialogPage;
++
++    let onSendMess = () => {
++        props.store.dispatch(sendMessActionCreator());
++    }
++
++    let onSendChange = (text) => {
++
++        props.store.dispatch(updateNewSendMessActionCreator(text));
++    }
++
++    return (
++        <Dialogs onSendMess={onSendMess} onSendChange={onSendChange}
++         dialogPage={state}/>
++    );
++}
++
++export default DialogsContainer;
+\ No newline at end of file
+Index: src/components/News/News.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/components/News/News.jsx	(revision a635d0b1a6ccd7b9204c40e301afaf82e1579db6)
++++ src/components/News/News.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
+@@ -1,21 +1,21 @@
+ import React from "react";
+ import s from './News.module.css'
+ import NewsItem from "./NewsItem/NewsItem";
+-import {addNewsPostActionCreator, updateNewsPostActionCreator} from "../../redux/news-reducer";
+ 
+ 
+ const News = (props) => {
++    let state = props.newsPage;
+ 
+-    let newsElements = props.state.newsData.map(news => <NewsItem news={news.news}/>);
+-    let newNewsBody = props.state.newNewsText;
++    let newsElements = state.newsData.map(news => <NewsItem news={news.news}/>);
++    let newNewsBody = state.newNewsText;
+ 
+     let sendNews = () =>{
+-        props.dispatch(addNewsPostActionCreator());
++        props.onSendNews();
+     }
+ 
+     let sendChange = (e) =>{
+         let text = e.target.value;
+-        props.dispatch(updateNewsPostActionCreator(text));
++        props.onSendChange(text);
+     }
+ 
+     return (
+Index: src/components/News/NewsContainer.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/components/News/NewsContainer.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
++++ src/components/News/NewsContainer.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
+@@ -0,0 +1,23 @@
++import React from "react";
++import {addNewsPostActionCreator, updateNewsPostActionCreator} from "../../redux/news-reducer";
++import News from "./News";
++
++
++const NewsContainer = (props) => {
++    let state = props.store.getState().newsPage;
++
++    let onSendNews = () =>{
++        props.store.dispatch(addNewsPostActionCreator());
++    }
++
++    let onSendChange = (text) =>{
++        props.store.dispatch(updateNewsPostActionCreator(text));
++    }
++
++    return (
++        <News onSendNews={onSendNews} onSendChange={onSendChange}
++        newsPage={state} />
++    )
++}
++
++export default NewsContainer;
+\ No newline at end of file
+Index: src/components/Profile/MyPosts/MyPostContainer.jsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/components/Profile/MyPosts/MyPostContainer.jsx	(revision a635d0b1a6ccd7b9204c40e301afaf82e1579db6)
++++ src/components/Profile/MyPosts/MyPostContainer.jsx	(revision c5bfcb4050540482e12b50033eaea5b8a57fea6e)
+@@ -4,7 +4,7 @@
+ 
+ 
+ const MyPostContainer = (props) => {
+-    let state = props.store.getState();
++    let state = props.store.getState().profilePage;
+ 
+     let addPost = () => {
+         props.store.dispatch(addPostActionCreator());
+@@ -16,8 +16,8 @@
+     }
+ 
+     return (
+-        <MyPost updateNewPostText={onPostChange} addPost={addPost} postData={state.profilePage.postData}
+-        newPostText={state.profilePage.newPostText}/>
++        <MyPost updateNewPostText={onPostChange} addPost={addPost} postData={state.postData}
++        newPostText={state.newPostText}/>
+     );
+ }
+ 
